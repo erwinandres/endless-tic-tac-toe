@@ -76,6 +76,7 @@ class Regist {
     constructor() {
         this.turns = [];
         this.max = 3;
+        this.points = 0;
     }
 
     add(index) {
@@ -92,7 +93,6 @@ const history = [new Regist(), new Regist()];
 
 let currentTurn = 0;
 let turnCount = 0;
-let isOver = false;
 
 function getCol(index) {
     return index % boardWidth;
@@ -120,12 +120,14 @@ function nextTurn() {
     }
 }
 
-function over(player) {
+function score(player) {
     isOver = true;
 
     history[player].turns.forEach(turn => {
         boxes[turn].classList.add(winnerBoxClassName);
     });
+
+    history[player].points++;
 }
 
 function checkWin(index) {
@@ -137,7 +139,7 @@ function checkWin(index) {
         if (boxes[getIndex(col, i)].innerText !== players[currentTurn]) break;
 
         if (i === boardWidth - 1) {
-            return over(currentTurn);
+            return score(currentTurn);
         }
     }
 
@@ -147,7 +149,7 @@ function checkWin(index) {
         if (boxes[getIndex(i, row)].innerText !== players[currentTurn]) break;
 
         if (i === boardWidth - 1) {
-            return over(currentTurn);
+            return score(currentTurn);
         }
     }
 
@@ -157,7 +159,7 @@ function checkWin(index) {
             if (boxes[getIndex(i, i)].innerText !== players[currentTurn]) break;
 
             if (i === boardWidth - 1) {
-                return over(currentTurn);
+                return score(currentTurn);
             }
         }
     }
@@ -167,7 +169,7 @@ function checkWin(index) {
             if (boxes[getIndex(i, (boardWidth - 1) - i)].innerText !== players[currentTurn]) break;
 
             if (i === boardWidth - 1) {
-                return over(currentTurn);
+                return score(currentTurn);
             }
         }
     }
@@ -177,12 +179,16 @@ const turnDisplayElement = document.getElementById('turn-display');
 const boxes = document.querySelectorAll('.box');
 
 function onClickBox() {
-    if (isOver) return;
-    const index = Number(this.dataset.boxId);
-    console.log(getRow(index), getCol(index));
     if (this.innerText) return;
+
+    document.querySelectorAll('.' + winnerBoxClassName).forEach(box => {
+        box.classList.remove(winnerBoxClassName);
+    });
+    
     this.innerText = players[currentTurn];
     turnCount++;
+    
+    const index = Number(this.dataset.boxId);
     history[currentTurn].add(index);
     checkWin(index);
     nextTurn();
