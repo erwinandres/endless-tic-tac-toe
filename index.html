@@ -1,0 +1,194 @@
+<style>
+    :root {
+        --box-size: 100px;
+    }
+
+    html {
+        height: 100%;
+    }
+    
+    body {
+        margin: 0;
+    }
+
+    .game {
+        padding: 3rem 0;
+    }
+
+    .game-info {
+        text-align: center;
+        margin-bottom: 1.6rem;
+    }
+
+    .game-info--player {
+        font-size: 3rem;
+    }
+
+    .arena {
+        display: grid;
+        grid-template-columns: repeat(3, var(--box-size));
+        grid-template-rows: repeat(3, var(--box-size));
+        width: calc(var(--box-size) * 3);
+        margin: 0 auto;
+        font-size: 3em;
+    }
+    .box {
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: default;
+    }
+
+    .box__winner {
+        background-color: #4c8bf5;
+    }
+
+    .box__next {
+        opacity: .5;
+    }
+</style>
+
+<div class="game">
+    <div class="game-info"><span class="game-info--player" id="turn-display">⭕</span></div>
+
+    <div class="arena">
+        <div class="box" data-box-id="0"></div>
+        <div class="box" data-box-id="1"></div>
+        <div class="box" data-box-id="2"></div>
+        <div class="box" data-box-id="3"></div>
+        <div class="box" data-box-id="4"></div>
+        <div class="box" data-box-id="5"></div>
+        <div class="box" data-box-id="6"></div>
+        <div class="box" data-box-id="7"></div>
+        <div class="box" data-box-id="8"></div>
+    </div>
+</div>
+
+<script>
+const winnerBoxClassName = 'box__winner';
+const nextBoxClassName = 'box__next';
+
+const players = ['⭕', '❌'];
+const boardWidth = 3;
+
+class Regist {
+    constructor() {
+        this.turns = [];
+        this.max = 3;
+    }
+
+    add(index) {
+        if (this.turns.length >= this.max) {
+            boxes[this.turns[0]].innerText = '';
+            this.turns.shift();
+        }
+
+        this.turns.push(index);
+    }
+}
+
+const history = [new Regist(), new Regist()];
+
+let currentTurn = 0;
+let turnCount = 0;
+let isOver = false;
+
+function getCol(index) {
+    return index % boardWidth;
+}
+
+function getRow(index) {
+    return Math.floor(index / boardWidth);
+}
+
+function getIndex(col, row) {
+    return col + boardWidth * row;
+}
+
+function nextTurn() {
+    currentTurn ++;
+    if (currentTurn > 1) currentTurn = 0;
+
+    turnDisplayElement.innerText = players[currentTurn];
+    
+    document.querySelector('.' + nextBoxClassName)?.classList.remove(nextBoxClassName);
+
+    if (history[currentTurn].turns.length === 3) {
+        const nextTurnBox = history[currentTurn].turns[0];
+        boxes[nextTurnBox].classList.add(nextBoxClassName);
+    }
+}
+
+function over(player) {
+    isOver = true;
+
+    history[player].turns.forEach(turn => {
+        boxes[turn].classList.add(winnerBoxClassName);
+    });
+}
+
+function checkWin(index) {
+    const row = getRow(index);
+    const col = getCol(index);
+
+    //check col
+    for (let i = 0; i < boardWidth; i++) {
+        if (boxes[getIndex(col, i)].innerText !== players[currentTurn]) break;
+
+        if (i === boardWidth - 1) {
+            return over(currentTurn);
+        }
+    }
+
+    //check row
+
+    for (let i = 0; i < boardWidth; i++) {
+        if (boxes[getIndex(i, row)].innerText !== players[currentTurn]) break;
+
+        if (i === boardWidth - 1) {
+            return over(currentTurn);
+        }
+    }
+
+    //check diags
+    if (row === col) {
+        for (let i = 0; i < boardWidth; i++) {
+            if (boxes[getIndex(i, i)].innerText !== players[currentTurn]) break;
+
+            if (i === boardWidth - 1) {
+                return over(currentTurn);
+            }
+        }
+    }
+
+    if (row + col === boardWidth - 1) {
+        for (let i = 0; i < boardWidth; i++) {
+            if (boxes[getIndex(i, (boardWidth - 1) - i)].innerText !== players[currentTurn]) break;
+
+            if (i === boardWidth - 1) {
+                return over(currentTurn);
+            }
+        }
+    }
+}
+
+const turnDisplayElement = document.getElementById('turn-display');
+const boxes = document.querySelectorAll('.box');
+
+function onClickBox() {
+    if (isOver) return;
+    const index = Number(this.dataset.boxId);
+    console.log(getRow(index), getCol(index));
+    if (this.innerText) return;
+    this.innerText = players[currentTurn];
+    turnCount++;
+    history[currentTurn].add(index);
+    checkWin(index);
+    nextTurn();
+}
+
+boxes.forEach(box => {
+    box.addEventListener('click', onClickBox);
+});
+</script>
