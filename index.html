@@ -13,23 +13,50 @@
 
     .game {
         padding: 3rem 0;
+        width: calc(var(--box-size) * 3);
+        margin: 0 auto;
     }
 
     .game-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         text-align: center;
         margin-bottom: 1.6rem;
+        position: relative;
+        font-size: 1.8rem;
+    }
+    
+    .game-info::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 5px;
+        width: 55px;
+        background-color: #4c8bf5;
+        transition: left cubic-bezier(0.4, 0, 0.2, 1) .5s;
+    }
+
+    .game-info[data-trn-player="1"]::after {
+        left: calc(100% - 55px);
     }
 
     .game-info--player {
-        font-size: 3rem;
+        padding: .5rem;
+    }
+
+    .game-info--score {
+        border: 1px solid;
+        padding: 4px 8px;
+        border-radius: 8px;
     }
 
     .arena {
         display: grid;
+        width: 100%;
         grid-template-columns: repeat(3, var(--box-size));
         grid-template-rows: repeat(3, var(--box-size));
-        width: calc(var(--box-size) * 3);
-        margin: 0 auto;
         font-size: 3em;
     }
     .box {
@@ -50,7 +77,13 @@
 </style>
 
 <div class="game">
-    <div class="game-info"><span class="game-info--player" id="turn-display">⭕</span></div>
+    <div class="game-info" data-trn-player="0">
+        <div class="game-info--player">⭕</div>
+        <div class="game-info--score">
+            <span class="game-info--score--player" data-score-player="0">0</span> - <span class="game-info--score--player" data-score-player="1">0</span>
+        </div>
+        <div class="game-info--player">❌</div>
+    </div>
 
     <div class="arena">
         <div class="box" data-box-id="0"></div>
@@ -110,24 +143,23 @@ function nextTurn() {
     currentTurn ++;
     if (currentTurn > 1) currentTurn = 0;
 
-    turnDisplayElement.innerText = players[currentTurn];
-    
     document.querySelector('.' + nextBoxClassName)?.classList.remove(nextBoxClassName);
 
     if (history[currentTurn].turns.length === 3) {
         const nextTurnBox = history[currentTurn].turns[0];
         boxes[nextTurnBox].classList.add(nextBoxClassName);
     }
+
+    turnDisplay.dataset.trnPlayer = currentTurn;
 }
 
 function score(player) {
-    isOver = true;
-
     history[player].turns.forEach(turn => {
         boxes[turn].classList.add(winnerBoxClassName);
     });
 
     history[player].points++;
+    scoreDisplays[player].innerText = history[player].points;
 }
 
 function checkWin(index) {
@@ -175,8 +207,9 @@ function checkWin(index) {
     }
 }
 
-const turnDisplayElement = document.getElementById('turn-display');
 const boxes = document.querySelectorAll('.box');
+const scoreDisplays = document.querySelectorAll('[data-score-player]');
+const turnDisplay = document.querySelector('[data-trn-player]');
 
 function onClickBox() {
     if (this.innerText) return;
