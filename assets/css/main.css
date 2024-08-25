@@ -10,10 +10,25 @@ body {
   margin: 0;
 }
 
-.game {
-  padding: 3rem 0;
+.app {
   width: calc(var(--box-size) * 3);
   margin: 0 auto;
+}
+
+[data-screen-name] {
+  display: none;
+}
+
+[data-screen-active] {
+  display: block;
+}
+
+.start {
+  text-align: center;
+}
+
+.game {
+  padding: 3rem 0;
 }
 
 .game-info {

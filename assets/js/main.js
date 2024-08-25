@@ -4,6 +4,33 @@ const nextBoxClassName = 'box__next';
 const players = ['⭕', '❌'];
 const boardWidth = 3;
 
+class ScreenManager {
+    static #SELECTOR = 'data-screen-name';
+    static #ACTIVE_SELECTOR = 'data-screen-active';
+
+    constructor() {
+        this.screens = {}
+        this.currentActive;
+
+        this.registScreens();
+    }
+
+    registScreens() {
+        document.querySelectorAll(`[${ScreenManager.#SELECTOR}]`).forEach(screenElement => {
+            const screenName = screenElement.getAttribute(ScreenManager.#SELECTOR);
+            this.screens[screenName] = screenElement;
+
+            if (!this.currentActive) this.currentActive = screenName;
+        });
+    }
+
+    open(screenName) {
+        this.screens[this.currentActive].removeAttribute(ScreenManager.#ACTIVE_SELECTOR);
+        this.screens[screenName].setAttribute(ScreenManager.#ACTIVE_SELECTOR, true);
+        this.currentActive = screenName;
+    }
+}
+
 class Regist {
     constructor() {
         this.turns = [];
@@ -109,6 +136,13 @@ function checkWin(index) {
 const boxes = document.querySelectorAll('[data-box-id]');
 const scoreDisplays = document.querySelectorAll('[data-score-player]');
 const turnDisplay = document.querySelector('[data-trn-player]');
+const startLocalButton = document.getElementById('start-local-button');
+
+const screenManager = new ScreenManager();
+
+startLocalButton.addEventListener('click', function() {
+    screenManager.open('game');
+});
 
 function onClickBox() {
     if (this.innerText) return;

@@ -8,26 +8,32 @@
     <link rel="stylesheet" href="/assets/css/main.css">
 </head>
 <body>
-    <div class="game">
-        <div class="game-info" data-trn-player="0">
-            <div class="game-info--player">⭕</div>
-            <div class="game-info--score">
-                <span class="game-info--score--player" data-score-player="0">0</span> - <span class="game-info--score--player" data-score-player="1">0</span>
+    <div class="app">
+        <div class="start" data-screen-name="start" data-screen-active>
+            <h1 class="start--title">Endless Tic-tac-toe</h1>
+            <button class="start--play-button" id="start-local-button">Play</button>
+        </div>
+        <div class="game" data-screen-name="game">
+            <div class="game-info" data-trn-player="0">
+                <div class="game-info--player">⭕</div>
+                <div class="game-info--score">
+                    <span class="game-info--score--player" data-score-player="0">0</span> - <span class="game-info--score--player" data-score-player="1">0</span>
+                </div>
+                <div class="game-info--player">❌</div>
             </div>
-            <div class="game-info--player">❌</div>
-        </div>
-    
-        <div class="arena">
-            <div class="box"><span class="box--content" data-box-id="0"></span></div>
-            <div class="box"><span class="box--content" data-box-id="1"></span></div>
-            <div class="box"><span class="box--content" data-box-id="2"></span></div>
-            <div class="box"><span class="box--content" data-box-id="3"></span></div>
-            <div class="box"><span class="box--content" data-box-id="4"></span></div>
-            <div class="box"><span class="box--content" data-box-id="5"></span></div>
-            <div class="box"><span class="box--content" data-box-id="6"></span></div>
-            <div class="box"><span class="box--content" data-box-id="7"></span></div>
-            <div class="box"><span class="box--content" data-box-id="8"></span></div>
-        </div>
+        
+            <div class="arena">
+                <div class="box"><span class="box--content" data-box-id="0"></span></div>
+                <div class="box"><span class="box--content" data-box-id="1"></span></div>
+                <div class="box"><span class="box--content" data-box-id="2"></span></div>
+                <div class="box"><span class="box--content" data-box-id="3"></span></div>
+                <div class="box"><span class="box--content" data-box-id="4"></span></div>
+                <div class="box"><span class="box--content" data-box-id="5"></span></div>
+                <div class="box"><span class="box--content" data-box-id="6"></span></div>
+                <div class="box"><span class="box--content" data-box-id="7"></span></div>
+                <div class="box"><span class="box--content" data-box-id="8"></span></div>
+            </div>
+        </div>        
     </div>
     
     <script src="/assets/js/main.js"></script>
