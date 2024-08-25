@@ -1,257 +1,35 @@
-<style>
-    :root {
-        --box-size: 100px;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endless Tic-tac-toe</title>
 
-    html {
-        height: 100%;
-    }
-    
-    body {
-        margin: 0;
-    }
-
-    .game {
-        padding: 3rem 0;
-        width: calc(var(--box-size) * 3);
-        margin: 0 auto;
-    }
-
-    .game-info {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        text-align: center;
-        margin-bottom: 3.2rem;
-        position: relative;
-        font-size: 1.8rem;
-    }
-    
-    .game-info::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        height: 5px;
-        width: 55px;
-        background-color: #4c8bf5;
-        transition: left cubic-bezier(0.4, 0, 0.2, 1) .5s;
-    }
-
-    .game-info[data-trn-player="1"]::after {
-        left: calc(100% - 55px);
-    }
-
-    .game-info--player {
-        padding: .5rem;
-    }
-
-    .game-info--score {
-        border: 1px solid;
-        padding: 4px 8px;
-        border-radius: 8px;
-    }
-
-    .arena {
-        display: grid;
-        width: 100%;
-        grid-template-columns: repeat(3, var(--box-size));
-        grid-template-rows: repeat(3, var(--box-size));
-        font-size: 3em;
-    }
-    .box {
-        border: 4px solid;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: default;
-    }
-
-    .box__winner {
-        background-color: #4c8bf5;
-    }
-
-    .box__next {
-        opacity: .5;
-    }
-
-    .box:nth-child(-n+3) {
-        border-top: none;
-    }
-
-    .box:nth-child(3n+1) {
-        border-left: none;
-    }
-
-    .box:nth-child(3n+3) {
-        border-right: none;
-    }
-
-    .box:nth-child(n+7):nth-child(-n+9) {
-        border-bottom: none;
-    }
-
-    .box--content {
-        display: flex;
-        width: 100%;
-        height: 100%;
-        justify-content: center;
-        align-items: center;
-    }
-</style>
-
-<div class="game">
-    <div class="game-info" data-trn-player="0">
-        <div class="game-info--player">⭕</div>
-        <div class="game-info--score">
-            <span class="game-info--score--player" data-score-player="0">0</span> - <span class="game-info--score--player" data-score-player="1">0</span>
+    <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+    <div class="game">
+        <div class="game-info" data-trn-player="0">
+            <div class="game-info--player">⭕</div>
+            <div class="game-info--score">
+                <span class="game-info--score--player" data-score-player="0">0</span> - <span class="game-info--score--player" data-score-player="1">0</span>
+            </div>
+            <div class="game-info--player">❌</div>
         </div>
-        <div class="game-info--player">❌</div>
-    </div>
-
-    <div class="arena">
-        <div class="box"><span class="box--content" data-box-id="0"></span></div>
-        <div class="box"><span class="box--content" data-box-id="1"></span></div>
-        <div class="box"><span class="box--content" data-box-id="2"></span></div>
-        <div class="box"><span class="box--content" data-box-id="3"></span></div>
-        <div class="box"><span class="box--content" data-box-id="4"></span></div>
-        <div class="box"><span class="box--content" data-box-id="5"></span></div>
-        <div class="box"><span class="box--content" data-box-id="6"></span></div>
-        <div class="box"><span class="box--content" data-box-id="7"></span></div>
-        <div class="box"><span class="box--content" data-box-id="8"></span></div>
-    </div>
-</div>
-
-<script>
-const winnerBoxClassName = 'box__winner';
-const nextBoxClassName = 'box__next';
-
-const players = ['⭕', '❌'];
-const boardWidth = 3;
-
-class Regist {
-    constructor() {
-        this.turns = [];
-        this.max = 3;
-        this.points = 0;
-    }
-
-    add(index) {
-        if (this.turns.length >= this.max) {
-            boxes[this.turns[0]].innerText = '';
-            this.turns.shift();
-        }
-
-        this.turns.push(index);
-    }
-}
-
-const history = [new Regist(), new Regist()];
-
-let currentTurn = 0;
-let turnCount = 0;
-
-function getCol(index) {
-    return index % boardWidth;
-}
-
-function getRow(index) {
-    return Math.floor(index / boardWidth);
-}
-
-function getIndex(col, row) {
-    return col + boardWidth * row;
-}
-
-function nextTurn() {
-    currentTurn ++;
-    if (currentTurn > 1) currentTurn = 0;
-
-    document.querySelector('.' + nextBoxClassName)?.classList.remove(nextBoxClassName);
-
-    if (history[currentTurn].turns.length === 3) {
-        const nextTurnBox = history[currentTurn].turns[0];
-        boxes[nextTurnBox].classList.add(nextBoxClassName);
-    }
-
-    turnDisplay.dataset.trnPlayer = currentTurn;
-}
-
-function score(player) {
-    history[player].turns.forEach(turn => {
-        boxes[turn].classList.add(winnerBoxClassName);
-    });
-
-    history[player].points++;
-    scoreDisplays[player].innerText = history[player].points;
-}
-
-function checkWin(index) {
-    const row = getRow(index);
-    const col = getCol(index);
-
-    //check col
-    for (let i = 0; i < boardWidth; i++) {
-        if (boxes[getIndex(col, i)].innerText !== players[currentTurn]) break;
-
-        if (i === boardWidth - 1) {
-            return score(currentTurn);
-        }
-    }
-
-    //check row
-
-    for (let i = 0; i < boardWidth; i++) {
-        if (boxes[getIndex(i, row)].innerText !== players[currentTurn]) break;
-
-        if (i === boardWidth - 1) {
-            return score(currentTurn);
-        }
-    }
-
-    //check diags
-    if (row === col) {
-        for (let i = 0; i < boardWidth; i++) {
-            if (boxes[getIndex(i, i)].innerText !== players[currentTurn]) break;
-
-            if (i === boardWidth - 1) {
-                return score(currentTurn);
-            }
-        }
-    }
-
-    if (row + col === boardWidth - 1) {
-        for (let i = 0; i < boardWidth; i++) {
-            if (boxes[getIndex(i, (boardWidth - 1) - i)].innerText !== players[currentTurn]) break;
-
-            if (i === boardWidth - 1) {
-                return score(currentTurn);
-            }
-        }
-    }
-}
-
-const boxes = document.querySelectorAll('[data-box-id]');
-const scoreDisplays = document.querySelectorAll('[data-score-player]');
-const turnDisplay = document.querySelector('[data-trn-player]');
-
-function onClickBox() {
-    if (this.innerText) return;
-
-    document.querySelectorAll('.' + winnerBoxClassName).forEach(box => {
-        box.classList.remove(winnerBoxClassName);
-    });
     
-    this.innerText = players[currentTurn];
-    turnCount++;
+        <div class="arena">
+            <div class="box"><span class="box--content" data-box-id="0"></span></div>
+            <div class="box"><span class="box--content" data-box-id="1"></span></div>
+            <div class="box"><span class="box--content" data-box-id="2"></span></div>
+            <div class="box"><span class="box--content" data-box-id="3"></span></div>
+            <div class="box"><span class="box--content" data-box-id="4"></span></div>
+            <div class="box"><span class="box--content" data-box-id="5"></span></div>
+            <div class="box"><span class="box--content" data-box-id="6"></span></div>
+            <div class="box"><span class="box--content" data-box-id="7"></span></div>
+            <div class="box"><span class="box--content" data-box-id="8"></span></div>
+        </div>
+    </div>
     
-    const index = Number(this.dataset.boxId);
-    history[currentTurn].add(index);
-    checkWin(index);
-    nextTurn();
-}
-
-boxes.forEach(box => {
-    box.addEventListener('click', onClickBox);
-});
-</script>
+    <script src="/assets/js/main.js"></script>
+</body>
+</html>

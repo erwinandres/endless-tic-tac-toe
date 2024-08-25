@@ -1,0 +1,99 @@
+:root {
+  --box-size: 100px;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.game {
+  padding: 3rem 0;
+  width: calc(var(--box-size) * 3);
+  margin: 0 auto;
+}
+
+.game-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  margin-bottom: 3.2rem;
+  position: relative;
+  font-size: 1.8rem;
+}
+
+.game-info::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 5px;
+  width: 55px;
+  background-color: #4c8bf5;
+  transition: left cubic-bezier(0.4, 0, 0.2, 1) .5s;
+}
+
+.game-info[data-trn-player="1"]::after {
+  left: calc(100% - 55px);
+}
+
+.game-info--player {
+  padding: .5rem;
+}
+
+.game-info--score {
+  border: 1px solid;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.arena {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, var(--box-size));
+  grid-template-rows: repeat(3, var(--box-size));
+  font-size: 3em;
+}
+.box {
+  border: 4px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.box__winner {
+  background-color: #4c8bf5;
+}
+
+.box__next {
+  opacity: .5;
+}
+
+.box:nth-child(-n+3) {
+  border-top: none;
+}
+
+.box:nth-child(3n+1) {
+  border-left: none;
+}
+
+.box:nth-child(3n+3) {
+  border-right: none;
+}
+
+.box:nth-child(n+7):nth-child(-n+9) {
+  border-bottom: none;
+}
+
+.box--content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
